@@ -1,0 +1,24 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css">
+
+<!-- As a heading -->
+<nav class="navbar navbar-dark bg-dark">
+  <span class="navbar-brand mb-0 h1">New Game</span>
+</nav>
+
+<div class="box">
+    <% @letters.each do |letter| %>
+            <div style="background-color: cornflowerblue; color: #fff; width:75px; font-size:48px; font-weight: bold;"><%= letter.capitalize %></div>
+    <% end %>
+</div>
+
+<div class="submit-a-word">
+    <h1>What is the longest word you can find ?</h1>
+
+    <form action="/score" method="get">
+    <div class="input-group md-form form-sm form-2 pl-0">
+        <input class="form-control my-0 py-1 amber-border" type="text" name="word" size="69" style="padding: 5px" placeholder="Be original .." aria-label="Search">
+        <input type="submit" class="btn btn-primary" value="Play">
+    </div>
+    </form>
+</div>
