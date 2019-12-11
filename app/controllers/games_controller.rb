@@ -1,52 +1,51 @@
 class GamesController < ApplicationController
+  # 3 hours later ... don't put in GemFile ?!
+  require 'open-uri'
+
   def generate_grid(grid_size)
-    letters = ("a".."z").to_a + ("a".."z").to_a
+    letters = ("a".."z").to_a + ("a".."o").to_a
     random_grid = letters.sample(grid_size)
   end
 
   def new
     @letters = generate_grid(9)
-    @start_time = Time.now
   end
 
-  def word_attempt
-    @end_time = Time.now
-    @attempt = params[:word]
-    test_word = @attempt.split('')
-    test_word.each do |letter|
-      if @letters.include? letter
-        ur_attempt = true
-        @letters.delete(letter)
+  def included?(guess, grid)
+    guess.all? { |letter| guess.count(letter) <= grid.count(letter) }
+  end
+
+  def my_word(attempt, grid)
+    word = []
+    test_word = attempt.each {|el| word.push(el.downcase) }
+    word.each do |letter|
+      if grid.include? letter
+        @ur_attempt = true
+        grid.delete(letter)
       else
-        ur_attempt = false
+        @ur_attempt = false
       end
-      return ur_attempt
     end
+    return @ur_attempt
   end
 
-  score = 0
-  
-  def run_game
-    timing = @end_time - @start_time
-    search = @attempt
-    word = JSON.parse(open("https://wagon-dictionary.herokuapp.com/#{search}").read)
-    if word_attempt()
-      if word['found']
-        score = @attempt.length.fdiv(timing).round
-        message = "well done"
-      else
-        score = 0
-        message = "not an english word"
-      end
-    else
-      score = 0
-      message = "not in the grid"
-    end
-    result = { time: timing, score: score, message: message }
+  def english_word?(word)
+    response = open("https://wagon-dictionary.herokuapp.com/#{word}")
+    json = JSON.parse(response.read)
+    return json['found']
   end
-
 
   def score
-    @result = run_game
+    word = params[:word]
+    user_guess = params[:word].chars
+    grid = params[:letters].chars
+    if english_word?(word) && my_word(user_guess, grid)
+      @score = "The word #{word.capitalize} is valid according to the grid and is an English word"
+    elsif my_word(user_guess, grid)
+      @score = "The word #{user_guess.join} is valid according to the grid, but is not a valid English word"
+    else
+      @score = "The word #{word.capitalize} can't be built out of the original grid"
+    end
+    return @score
   end
 end

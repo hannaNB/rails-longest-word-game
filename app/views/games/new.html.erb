@@ -19,6 +19,8 @@
     <div class="input-group md-form form-sm form-2 pl-0">
         <input class="form-control my-0 py-1 amber-border" type="text" name="word" size="69" style="padding: 5px" placeholder="Be original .." aria-label="Search">
         <input type="submit" class="btn btn-primary" value="Play">
+        <%= hidden_field_tag :letters, @letters.join %>
+        <input type="hidden" name="letters" value="<%= @letters.join %>">
     </div>
     </form>
 </div>
